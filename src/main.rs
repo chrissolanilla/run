@@ -75,27 +75,17 @@ fn main() {
     let out = Command::new("sh")
         .arg("-c")
         .arg(cmd)
-        .output()
+        // .output()
+        .status()
         .expect("failed to execute command");
-    // let process = match parts.next() {
-    //     Some(p) => p,
-    //     None => {
-    //         eprintln!("empty command for key: {}", args[1]);
-    //         std::process::exit(1);
-    //     }
-    // };
-    //
-    // let out = Command::new("sh")
-    //     .arg("-c")
-    //     .arg(process)
-    //     .output()
-    //     .expect("failed to execute command");
 
     //theoretically we could put in chinese
-    match String::from_utf8(out.stdout) {
-        Ok(s) => println!("{s}"),
-        Err(e) => eprintln!("bad utf8: {e}"),
-    }
+    // match String::from_utf8(out.stdout) {
+    //     Ok(s) => println!("{s}"),
+    //     Err(e) => eprintln!("bad utf8: {e}"),
+    // }
+
+    println!("exit: {out}");
 
 
 

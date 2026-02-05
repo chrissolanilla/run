@@ -4,4 +4,6 @@ flex: fastfetch
 
 flex2: fastfetch && fastfetch
 
-sepoku: cargo run
+sepoku: cargo run sepoku
+
+build: gcc main.c -o main
