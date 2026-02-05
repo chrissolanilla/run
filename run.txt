@@ -5,5 +5,5 @@ flex: fastfetch
 flex2: fastfetch && fastfetch
 
 sepoku: cargo run sepoku
-
+//this is for c files
 build: gcc main.c -o main

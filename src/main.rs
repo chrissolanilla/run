@@ -38,15 +38,15 @@ fn main() {
     let lines: Vec<&str> = contents.lines().collect();
     let mut commands: HashMap<String, String> = HashMap::new();
     for line in lines {
-        if line.is_empty() || line.starts_with('/') {
-            // println!("skipping line: {}", line);
+        if line.is_empty() || line.starts_with("//") {
+            println!("skipping line: {}", line);
             continue;
         }
 
         let (key, value) = match line.split_once(':') {
             Some((k, v)) => (k.trim(), v.trim()),
             None => {
-                // println!("bad line: {}", line);
+                println!("bad line: {}", line);
                 continue;
             }
         };
