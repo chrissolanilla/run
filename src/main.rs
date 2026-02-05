@@ -13,13 +13,6 @@ fn read_file(contents:&mut String) -> std::io::Result<()> {
 
 fn main() {
     let mut args: Vec<String> = env::args().collect();
-    if args.len() == 1 {
-        args.push("default".to_string());
-    }
-    if args.len() != 2 {
-        println!("bad args length, only pass in one argument max, if you have a default then no args needed to run that");
-        std::process::exit(1);
-    }
     // println!("args are: ");
 
     // for arg in &args {
@@ -39,19 +32,33 @@ fn main() {
     let mut commands: HashMap<String, String> = HashMap::new();
     for line in lines {
         if line.is_empty() || line.starts_with("//") {
-            println!("skipping line: {}", line);
+            // println!("skipping line: {}", line);
             continue;
         }
 
         let (key, value) = match line.split_once(':') {
             Some((k, v)) => (k.trim(), v.trim()),
             None => {
-                println!("bad line: {}", line);
+                // println!("bad line: {}", line);
                 continue;
             }
         };
 
         commands.insert(key.to_string(), value.to_string());
+    }
+
+    if args.len() == 1 {
+        args.push("default".to_string());
+        // if default is not set in run.txt then this will exit
+        if commands.get("default").is_none() {
+            println!("[run.txt Error]: no \"default\" key in run.txt");
+            std::process::exit(1);
+        }
+    }
+
+    else if args.len() != 2 {
+        println!("bad args length, only pass in one argument max, if you have a default then no args needed to run that");
+        std::process::exit(1);
     }
 
     if &args[1] == "list" {
@@ -61,6 +68,7 @@ fn main() {
         }
         std::process::exit(0);
     }
+
 
     let cmd = match commands.get(&args[1]) {
         Some(v) => v.trim(),
