@@ -1,4 +1,6 @@
 use std::process::Command;
+use std::collections::HashMap;
+use std::env;
 
 fn read_file(contents:&mut String) -> std::io::Result<()> {
     let mut file = std::fs::File::open("run.txt")?;
@@ -10,6 +12,19 @@ fn read_file(contents:&mut String) -> std::io::Result<()> {
 }
 
 fn main() {
+    let args: Vec<String> = env::args().collect();
+    println!("path is: {}", args[0]);
+    println!("args length is: {}", args.len());
+    if args.len() != 2 {
+        println!("bad args length, only pass in one argument");
+        std::process::exit(1);
+    }
+    println!("args are: ");
+
+    for arg in &args {
+        println!("{}", arg);
+    }
+
     let mut contents = String::new();
     println!("contents here is: {}", contents);
 
@@ -19,12 +34,62 @@ fn main() {
     }
 
     println!("file says : {}", contents);
-    let cmd = contents.trim();
+    let lines: Vec<&str> = contents.lines().collect();
+    let mut commands: HashMap<String, String> = HashMap::new();
+    for line in lines {
+        if line.is_empty() || line.starts_with('/') {
+            println!("skipping line: {}", line);
+            continue;
+        }
 
-    let out = Command::new(cmd)
-        .arg("-lha")
+        let (key, value) = match line.split_once(':') {
+            Some((k, v)) => (k.trim(), v.trim()),
+            None => {
+                println!("bad line: {}", line);
+                continue;
+            }
+        };
+
+        commands.insert(key.to_string(), value.to_string());
+    }
+
+    // let cmd = contents.trim();
+
+    //
+    if &args[1] == "list" {
+        for (k, v) in commands {
+            println!("key: {k}, value: {v}");
+        }
+        std::process::exit(0);
+    }
+
+    let cmd = match commands.get(&args[1]) {
+        Some(v) => v.trim(),
+        None => {
+            eprintln!("unkown key in list, look for availible commands with \"run list\" ");
+            std::process::exit(1);
+        }
+    };
+
+    // let mut parts = cmd.split_whitespace();
+    let out = Command::new("sh")
+        .arg("-c")
+        .arg(cmd)
         .output()
         .expect("failed to execute command");
+    // let process = match parts.next() {
+    //     Some(p) => p,
+    //     None => {
+    //         eprintln!("empty command for key: {}", args[1]);
+    //         std::process::exit(1);
+    //     }
+    // };
+    //
+    // let out = Command::new("sh")
+    //     .arg("-c")
+    //     .arg(process)
+    //     .output()
+    //     .expect("failed to execute command");
 
     //theoretically we could put in chinese
     match String::from_utf8(out.stdout) {

@@ -1,1 +1,7 @@
-ls
+default: ls -lh
+
+flex: fastfetch
+
+flex2: fastfetch && fastfetch
+
+sepoku: cargo run
